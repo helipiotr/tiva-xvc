@@ -36,8 +36,13 @@
 #include "utils/lwiplib.h"
 #include "utils/ustdlib.h"
 #include "utils/uartstdio.h"
-//#include "httpserver_raw/httpd.h"
+#include "httpserver_raw/httpd.h" //currently just for test purpurses
 #include "drivers/pinout.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "semphr.h"
 
 //*****************************************************************************
 //
@@ -111,6 +116,32 @@ __error__(char *pcFilename, uint32_t ui32Line)
 {
 }
 #endif
+
+//*****************************************************************************
+//
+// Counter value used by the FreeRTOS run time stats feature.
+// http://www.freertos.org/rtos-run-time-stats.html
+//
+//*****************************************************************************
+volatile unsigned long g_vulRunTimeStatsCountValue;
+
+//*****************************************************************************
+//
+// This hook is called by FreeRTOS when an stack overflow error is detected.
+//
+//*****************************************************************************
+void
+vApplicationStackOverflowHook(xTaskHandle *pxTask, char *pcTaskName)
+{
+    //
+    // This function can not return, so loop forever.  Interrupts are disabled
+    // on entry to this function, so no processor interrupts will interrupt
+    // this loop.
+    //
+    while(1)
+    {
+    }
+}
 
 //*****************************************************************************
 //
@@ -207,16 +238,18 @@ lwIPHostTimerHandler(void)
 void
 SysTickIntHandler(void)
 {
+    #if NO_SYS
     //
     // Call the lwIP timer handler.
     //
-    lwIPTimer(SYSTICKMS);
+    lwIPTimer(SYSTICKMS); //not needed with an RTOS
 
     //
     // Tell the application to change the state of the LED (in other words
     // blink).
     //
     g_bLED = true;
+    #endif
 }
 
 //*****************************************************************************
@@ -330,7 +363,7 @@ main(void)
     //
     // Initialize a sample httpd server.
     //
-    //httpd_init();
+    httpd_init(); //currently just for test purpurses
 
     //
     // Set the interrupt priorities.  We set the SysTick interrupt to a higher
@@ -343,10 +376,28 @@ main(void)
     MAP_IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
 
     //
+    // Start the scheduler.  This should not return.
+    //
+    vTaskStartScheduler();
+
+    //
+    // In case the scheduler returns for some reason, print an error and loop
+    // forever.
+    //
+    UARTprintf("RTOS scheduler returned unexpectedly.\n");
+    while(1)
+    {
+        //
+        // Do Nothing.
+        //
+    }
+
+
+    //
     // Loop forever, processing the LED blinking.  All the work is done in
     // interrupt handlers.
     //
-    while(1)
+/*    while(1)
     {
         //
         // Wait till the SysTick Interrupt indicates to change the state of the
@@ -367,5 +418,5 @@ main(void)
         MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1,
                          (MAP_GPIOPinRead(GPIO_PORTN_BASE, GPIO_PIN_1) ^
                           GPIO_PIN_1));
-    }
+    }*/
 }
