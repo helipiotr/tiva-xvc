@@ -44,6 +44,8 @@
 #include "queue.h"
 #include "semphr.h"
 
+#include "enet_lwip.h"
+
 //*****************************************************************************
 //
 //! \addtogroup example_list
@@ -66,50 +68,20 @@
 //
 //*****************************************************************************
 
-//*****************************************************************************
-//
-// Defines for setting up the system clock.
-//
-//*****************************************************************************
-#define SYSTICKHZ               100
-#define SYSTICKMS               (1000 / SYSTICKHZ)
-
-//*****************************************************************************
-//
-// Interrupt priority definitions.  The top 3 bits of these values are
-// significant with lower values indicating higher priority interrupts.
-//
-//*****************************************************************************
-#define SYSTICK_INT_PRIORITY    0x80
-#define ETHERNET_INT_PRIORITY   0xC0
-
-//*****************************************************************************
-//
 // The current IP address.
-//
-//*****************************************************************************
 uint32_t g_ui32IPAddress;
 
-//*****************************************************************************
-//
 // The system clock frequency.
-//
-//*****************************************************************************
 uint32_t g_ui32SysClock;
 
-//*****************************************************************************
-//
 // Volatile global flag to manage LED blinking, since it is used in interrupt
-// and main application.  The LED blinks at the rate of SYSTICKHZ.
-//
-//*****************************************************************************
+// and main application.  The LED blinks at the rate of BLINK_TASK_PERIOD_MS.
 volatile bool g_bLED;
 
-//*****************************************************************************
-//
+// A handle by which this task and others can refer to this task.
+xTaskHandle g_xBlinkHandle;
+
 // The error routine that is called if the driver library encounters an error.
-//
-//*****************************************************************************
 #ifdef DEBUG
 void
 __error__(char *pcFilename, uint32_t ui32Line)
@@ -117,19 +89,12 @@ __error__(char *pcFilename, uint32_t ui32Line)
 }
 #endif
 
-//*****************************************************************************
-//
 // Counter value used by the FreeRTOS run time stats feature.
 // http://www.freertos.org/rtos-run-time-stats.html
-//
-//*****************************************************************************
 volatile unsigned long g_vulRunTimeStatsCountValue;
 
-//*****************************************************************************
-//
+
 // This hook is called by FreeRTOS when an stack overflow error is detected.
-//
-//*****************************************************************************
 void
 vApplicationStackOverflowHook(xTaskHandle *pxTask, char *pcTaskName)
 {
@@ -143,11 +108,7 @@ vApplicationStackOverflowHook(xTaskHandle *pxTask, char *pcTaskName)
     }
 }
 
-//*****************************************************************************
-//
 // Display an lwIP type IP Address.
-//
-//*****************************************************************************
 void
 DisplayIPAddress(uint32_t ui32Addr)
 {
@@ -165,11 +126,8 @@ DisplayIPAddress(uint32_t ui32Addr)
     UARTprintf(pcBuf);
 }
 
-//*****************************************************************************
-//
+
 // Required by lwIP library to support any host-related timer functions.
-//
-//*****************************************************************************
 void
 lwIPHostTimerHandler(void)
 {
@@ -230,33 +188,32 @@ lwIPHostTimerHandler(void)
     }
 }
 
-//*****************************************************************************
-//
-// The interrupt handler for the SysTick interrupt.
-//
-//*****************************************************************************
-void
-SysTickIntHandler(void)
+// Initializes the LED blink task.
+uint32_t
+BlinkTask(void)
 {
-    #if NO_SYS
+    portTickType xLastWakeTime;
+    for(;;){
     //
-    // Call the lwIP timer handler.
+    // Wait for the required amount of time to check back.
     //
-    lwIPTimer(SYSTICKMS); //not needed with an RTOS
+    vTaskDelayUntil(&xLastWakeTime, BLINK_TASK_PERIOD_MS /
+                    portTICK_RATE_MS);
 
-    //
-    // Tell the application to change the state of the LED (in other words
-    // blink).
-    //
-    g_bLED = true;
-    #endif
+    //g_bLED = (g_bLED ? false : true);
+    if (g_bLED){
+        g_bLED = false;
+    }else{
+        g_bLED = true;
+    }
+    MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1,
+                             (MAP_GPIOPinRead(GPIO_PORTN_BASE, GPIO_PIN_1) ^
+                              GPIO_PIN_1));
+    }
 }
 
-//*****************************************************************************
-//
+
 // This example demonstrates the use of the Ethernet Controller.
-//
-//*****************************************************************************
 int
 main(void)
 {
@@ -375,6 +332,11 @@ main(void)
     MAP_IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
     MAP_IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
 
+    g_bLED = false;
+    xTaskCreate(BlinkTask, (const portCHAR *)"Blink",
+                       BLINK_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY +
+                       PRIORITY_BLINK_TASK, g_xBlinkHandle);
+
     //
     // Start the scheduler.  This should not return.
     //
@@ -392,31 +354,4 @@ main(void)
         //
     }
 
-
-    //
-    // Loop forever, processing the LED blinking.  All the work is done in
-    // interrupt handlers.
-    //
-/*    while(1)
-    {
-        //
-        // Wait till the SysTick Interrupt indicates to change the state of the
-        // LED.
-        //
-        while(g_bLED == false)
-        {
-        }
-
-        //
-        // Clear the flag.
-        //
-        g_bLED = false;
-
-        //
-        // Toggle the LED.
-        //
-        MAP_GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1,
-                         (MAP_GPIOPinRead(GPIO_PORTN_BASE, GPIO_PIN_1) ^
-                          GPIO_PIN_1));
-    }*/
 }
