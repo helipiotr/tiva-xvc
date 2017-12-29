@@ -70,6 +70,7 @@
 #if !NO_SYS
 #define LWIP_COMPAT_MUTEX               1
 #define RTOS_FREERTOS                   1
+#define LWIP_PROVIDE_ERRNO 1                        //no posix error numbers this time
 #endif /* !NO_SYS */
 //#define MEMCPY(dst,src,len)             memcpy(dst,src,len)
 //#define SMEMCPY(dst,src,len)            memcpy(dst,src,len)
@@ -154,7 +155,7 @@
 // ---------- DHCP options ----------
 //
 //*****************************************************************************
-#define LWIP_DHCP                       1           // default is 0
+#define LWIP_DHCP                       0           // default is 0
 //#define DHCP_DOES_ARP_CHECK             ((LWIP_DHCP) && (LWIP_ARP))
 
 //*****************************************************************************
@@ -176,7 +177,7 @@
 // ---------- AUTOIP options ----------
 //
 //*****************************************************************************
-#define LWIP_AUTOIP                     1           // default is 0
+#define LWIP_AUTOIP                     0           // default is 0
 #define LWIP_DHCP_AUTOIP_COOP           ((LWIP_DHCP) && (LWIP_AUTOIP))
                                                     // default is 0
 #define LWIP_DHCP_AUTOIP_COOP_TRIES     5           // default is 9
@@ -308,15 +309,15 @@
 //
 //*****************************************************************************
 //#define LWIP_TCPIP_CORE_LOCKING         0
-#define LWIP_NETCONN                    0           // default is 1
+#define LWIP_NETCONN                    1           // default is 1
 
 //*****************************************************************************
 //
 // ---------- Socket Options ----------
 //
 //*****************************************************************************
-#define LWIP_SOCKET                     0           // default is 1
-//#define LWIP_COMPAT_SOCKETS             1
+#define LWIP_SOCKET                     1           // default is 1
+#define LWIP_COMPAT_SOCKETS             0
 //#define LWIP_POSIX_SOCKETS_IO_NAMES     1
 //#define LWIP_TCP_KEEPALIVE              0
 //#define LWIP_SO_RCVTIMEO                0

@@ -26,6 +26,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>XilinxVirtualCable/src</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/XilinxVirtualCable/XAPP1251/src</locationURI>
+		</link>
+		<link>
 			<name>drivers/pinout.c</name>
 			<type>1</type>
 			<locationURI>SW_ROOT/examples/boards/ek-tm4c1294xl/drivers/pinout.c</locationURI>
