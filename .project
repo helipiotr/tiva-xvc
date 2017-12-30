@@ -36,6 +36,21 @@
 			<locationURI>SW_ROOT/examples/boards/ek-tm4c1294xl/drivers/pinout.c</locationURI>
 		</link>
 		<link>
+			<name>ssi/soft_spi_master.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/ti/TivaWare_C_Series-2.1.4.178/examples/peripherals/ssi/soft_spi_master.c</locationURI>
+		</link>
+		<link>
+			<name>ssi/spi_master.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/ti/TivaWare_C_Series-2.1.4.178/examples/peripherals/ssi/spi_master.c</locationURI>
+		</link>
+		<link>
+			<name>ssi/ti_master.c</name>
+			<type>1</type>
+			<locationURI>PARENT-6-PROJECT_LOC/ti/TivaWare_C_Series-2.1.4.178/examples/peripherals/ssi/ti_master.c</locationURI>
+		</link>
+		<link>
 			<name>utils/locator.c</name>
 			<type>1</type>
 			<locationURI>SW_ROOT/utils/locator.c</locationURI>

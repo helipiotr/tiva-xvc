@@ -32,19 +32,5 @@ extern xTaskHandle g_xBlinkHandle;
 
 #define PRIORITY_BLINK_TASK       13
 
-//
-// The stack size for the XVC task.
-//
-#define XVC_TASK_STACK_SIZE        1024         // Stack size in words
-
-// Period in milliseconds to determine time between how often run the task.
-// This determines how often we blink with an LED
-#define XVC_TASK_PERIOD_MS         500        // periodic rate of the task
-
-// A handle by which blink task and others can refer to the task.
-extern xTaskHandle g_xXVCHandle;
-
-#define PRIORITY_XVC_TASK       12
-
 
 #endif /* ENET_LWIP_H_ */
