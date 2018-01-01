@@ -6,8 +6,18 @@
  */
 
 #include "xvc.h"
+#include "utils/lwiplib.h"
+#include "utils/uartstdio.h"
+#include "string.h"
 
+#include "FreeRTOS.h"
+#include "task.h"
 
+// A handle by which blink task and others can refer to the task.
+extern xTaskHandle g_xXVCHandle;
+
+// The current IP address.
+extern uint32_t g_ui32IPAddress;
 
 static int sread(int fd, void *target, int len) {
    unsigned char *t = target;

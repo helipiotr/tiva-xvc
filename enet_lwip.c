@@ -45,6 +45,7 @@
 
 #include "enet_lwip.h"
 #include "xvc.h"
+#include "jtag.h"
 
 //*****************************************************************************
 //
@@ -197,7 +198,12 @@ static void
 BlinkTask(void)
 {
     portTickType xLastWakeTime;
+
     for(;;){
+
+
+    jtag_send_receive(0xAC, 0xCA, NULL);
+
     //
     // Wait for the required amount of time to check back.
     //
@@ -313,15 +319,15 @@ main(void)
     // Initialize the lwIP library, using DHCP / static.
     //
     #if !(LWIP_DHCP || LWIP_AUTOIP)
-    struct ip_addr temp_ip;
-    struct ip_addr temp_mask;
-    IP4_ADDR(&temp_ip,45,0,168,192);
-    IP4_ADDR(&temp_mask,0,255,255,255);
+        struct ip_addr temp_ip;
+        struct ip_addr temp_mask;
+        IP4_ADDR(&temp_ip,45,0,168,192);
+        IP4_ADDR(&temp_mask,0,255,255,255);
 
-    //faster for debugging
-    lwIPInit(g_ui32SysClock, pui8MACArray, temp_ip.addr , temp_mask.addr , 0, IPADDR_USE_STATIC);
+        //faster for debugging
+        lwIPInit(g_ui32SysClock, pui8MACArray, temp_ip.addr , temp_mask.addr , 0, IPADDR_USE_STATIC);
     #else
-    lwIPInit(g_ui32SysClock, pui8MACArray, 0, 0, 0, IPADDR_USE_DHCP);
+        lwIPInit(g_ui32SysClock, pui8MACArray, 0, 0, 0, IPADDR_USE_DHCP);
     #endif
 
     //
@@ -346,6 +352,7 @@ main(void)
     MAP_IntPrioritySet(INT_EMAC0, ETHERNET_INT_PRIORITY);
     MAP_IntPrioritySet(FAULT_SYSTICK, SYSTICK_INT_PRIORITY);
 
+
     // Create blink LED task
     g_bLED = false;
     xTaskCreate(BlinkTask, (const portCHAR *)"Blink",
@@ -357,6 +364,9 @@ main(void)
     xTaskCreate(XVCTask, (const portCHAR *)"XVC",
                 XVC_TASK_STACK_SIZE, NULL, tskIDLE_PRIORITY +
                        PRIORITY_XVC_TASK, g_xXVCHandle);
+
+
+    jtag_init(g_ui32SysClock);
 
     //
     // Start the scheduler.  This should not return.
