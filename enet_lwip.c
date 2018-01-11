@@ -198,11 +198,12 @@ static void
 BlinkTask(void)
 {
     portTickType xLastWakeTime;
+    uint32_t receivedData;
 
     for(;;){
 
 
-    jtag_send_receive(0xAC, 0xCA, NULL);
+    //jtag_send_receive(0xAC, 0xCA, &receivedData);
 
     //
     // Wait for the required amount of time to check back.
@@ -366,7 +367,7 @@ main(void)
                        PRIORITY_XVC_TASK, g_xXVCHandle);
 
 
-    jtag_init(g_ui32SysClock);
+    jtag_init();
 
     //
     // Start the scheduler.  This should not return.

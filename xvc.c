@@ -13,11 +13,16 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "jtag.h"
+
 // A handle by which blink task and others can refer to the task.
 extern xTaskHandle g_xXVCHandle;
 
 // The current IP address.
 extern uint32_t g_ui32IPAddress;
+
+// The system clock frequency.
+extern uint32_t g_ui32SysClock;
 
 static int sread(int fd, void *target, int len) {
    unsigned char *t = target;
@@ -61,12 +66,15 @@ int handle_data(int fd /*, volatile jtag_t* ptr*/) {
             if (sread(fd, cmd, 9) != 1)
                 return 1;
             memcpy(result, cmd + 5, 4);
+
+            //jtag_setclk(result[0]); << to be tested
+
             if (lwip_write(fd, result, 4) != 4) {
                 UARTprintf("Socket write error. \n");
                 return 1;
             }
 
-            UARTprintf("Received command: 'settck'\n");
+            UARTprintf("Received command: 'settck', functionality currently unimplemented.\n");
             //printf("\t Replied with '%.*s'\n\n", 4, cmd + 5);
 
             break;
@@ -113,61 +121,17 @@ int handle_data(int fd /*, volatile jtag_t* ptr*/) {
                 tms = 0;
                 tdi = 0;
                 tdo = 0;
-                if (bytesLeft >= 4) {
                     memcpy(&tms, &buffer[byteIndex], 4);
                     memcpy(&tdi, &buffer[byteIndex + nr_bytes], 4);
 
-                    //TODO JTAG integration
-                    //ptr->length_offset = 32;
-                    //ptr->tms_offset = tms;
-                    //ptr->tdi_offset = tdi;
-                    //ptr->ctrl_offset = 0x01;
+                    jtag_send_receive(tdi, tms, &tdo);
 
-                    /* Switch this to interrupt in next revision */
-                    while ( 0 /*ptr->ctrl_offset*/)
-                        {
-            }
+                    memcpy(&result[byteIndex], &tdo, 1);
 
-                    //tdo = ptr->tdo_offset;
-                    memcpy(&result[byteIndex], &tdo, 4);
+                    bytesLeft -= 1;
+                    bitsLeft -= 8;
+                    byteIndex += 1;
 
-                    bytesLeft -= 4;
-                    bitsLeft -= 32;
-                    byteIndex += 4;
-
-                    /*if (verbose) {
-                        printf("LEN : 0x%08x\n", 32);
-                        printf("TMS : 0x%08x\n", tms);
-                        printf("TDI : 0x%08x\n", tdi);
-                        printf("TDO : 0x%08x\n", tdo);
-                    }*/
-
-                } else {
-                    memcpy(&tms, &buffer[byteIndex], bytesLeft);
-                    memcpy(&tdi, &buffer[byteIndex + nr_bytes], bytesLeft);
-
-                    //TODO JTAG integration
-                    //ptr->length_offset = bitsLeft;
-                    //ptr->tms_offset = tms;
-                    //ptr->tdi_offset = tdi;
-                    //ptr->ctrl_offset = 0x01;
-                    /* Switch this to interrupt in next revision */
-                    while ( 0 /*ptr->ctrl_offset */)
-                        {
-            }
-
-                    //tdo = ptr->tdo_offset;
-
-                    memcpy(&result[byteIndex], &tdo, bytesLeft);
-
-                    /*if (verbose) {
-                        printf("LEN : 0x%08x\n", 32);
-                        printf("TMS : 0x%08x\n", tms);
-                        printf("TDI : 0x%08x\n", tdi);
-                        printf("TDO : 0x%08x\n", tdo);
-                    }*/
-                    break;
-                }
             }
         if (lwip_write(fd, result, nr_bytes) != nr_bytes) {
             UARTprintf("Socket write error");

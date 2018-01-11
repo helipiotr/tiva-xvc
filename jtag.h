@@ -13,6 +13,7 @@
 
 
 void jtag_send_receive(uint32_t tdi, uint32_t tms, uint32_t* tdo);
-void jtag_init(uint32_t ui32SysClock);
+void jtag_init();
+void jtag_setclk(uint32_t jtag_clk_ns);
 
 #endif /* JTAG_H_ */
