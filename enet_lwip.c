@@ -36,7 +36,7 @@
 #include "utils/lwiplib.h"
 #include "utils/ustdlib.h"
 #include "utils/uartstdio.h"
-#include "httpserver_raw/httpd.h" //currently just for test purpurses
+//#include "httpserver_raw/httpd.h" //currently just for test purpurses
 #include "drivers/pinout.h"
 
 #include "FreeRTOS.h"
@@ -323,6 +323,7 @@ main(void)
         struct ip_addr temp_ip;
         struct ip_addr temp_mask;
         IP4_ADDR(&temp_ip,45,0,168,192);
+        //IP4_ADDR(&temp_ip,160,95,168,192);
         IP4_ADDR(&temp_mask,0,255,255,255);
 
         //faster for debugging
@@ -341,7 +342,7 @@ main(void)
     //
     // Initialize a sample httpd server.
     //
-    httpd_init(); //currently just for test purpurses
+    //httpd_init(); //currently just for test purpurses
 
     //
     // Set the interrupt priorities.  We set the SysTick interrupt to a higher

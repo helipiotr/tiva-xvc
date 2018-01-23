@@ -17,7 +17,7 @@
 // This determines how often we blink with an LED
 #define XVC_TASK_PERIOD_MS         500        // periodic rate of the task
 
-#define PRIORITY_XVC_TASK       12
+#define PRIORITY_XVC_TASK       5
 
 static int sread(int fd, void *target, int len);
 

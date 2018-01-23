@@ -196,59 +196,90 @@ void XVCTask(void)
 
     maxfd = s;
 
-
+    int debug_loopcounter=0;
     for(;;)
     {
-        fd_set read = conn, except = conn;
+        ++debug_loopcounter;
+        volatile fd_set read = conn, except = conn;
         int fd;
 
-        if (lwip_select(maxfd + 1, &read, 0, &except, 0) < 0) {
-            UARTprintf("Select error. \n");
-           break;
-        }
+        struct timeval timeout;
+        timeout.tv_sec = 3;
+        timeout.tv_usec = 0;
+        //volatile int success = lwip_select(maxfd + 1, &read, 0, &except, &timeout);
+        //if (/*lwip_select(maxfd + 1, &read, 0, &except, &timeout)*/ success < 0) {
+        //    UARTprintf("Select error. \n");
+        //   break;
+        //}
 
-        for (fd = 0; fd <= maxfd; ++fd) {
-           if (FD_ISSET(fd, &read)) {
-              if (fd == s) {
-                 int newfd;
-                 socklen_t nsize = sizeof(address);
+        int newfd;
+        socklen_t nsize = sizeof(address);
 
-                 newfd = lwip_accept(s, (struct sockaddr*) &address, &nsize);
+        newfd = lwip_accept(s, (struct sockaddr*) &address, &nsize);
 
-                 //UARTprintf("connection accepted - fd %d\n", newfd);
-                 if (newfd < 0) {
-                     UARTprintf("Accept error. \n");
-                 } else {
-                     UARTprintf("setting TCP_NODELAY to 1\n");
-                    int flag = 1;
-                    int optResult = lwip_setsockopt(newfd,
-                                               IPPROTO_TCP,
-                                               TCP_NODELAY,
-                                               (char *)&flag,
-                                               sizeof(int));
-                    if (optResult < 0)
-                        UARTprintf("TCP_NODELAY error \n");
-                    if (newfd > maxfd) {
-                       maxfd = newfd;
-                    }
-                    FD_SET(newfd, &conn);
-                 }
-              }
-              else if ( 1 /*handle_data(fd,ptr)*/) { //TODO: write data handling function
+         //UARTprintf("connection accepted - fd %d\n", newfd);
+         if (newfd < 0) {
+             UARTprintf("Accept error. \n");
+         } else {
+             UARTprintf("setting TCP_NODELAY to 1\n");
+            int flag = 1;
+            int optResult = lwip_setsockopt(newfd,
+                                       IPPROTO_TCP,
+                                       TCP_NODELAY,
+                                       (char *)&flag,
+                                       sizeof(int));
+            if (optResult < 0)
+                UARTprintf("TCP_NODELAY error \n");
+         }
 
-                 //UARTprintf("connection closed - fd %d\n \n",fd);
-                 lwip_close(fd);
-                 FD_CLR(fd, &conn);
-              }
-           }
-           else if (FD_ISSET(fd, &except)) {
-              //UARTprintf("connection aborted - fd %d\n", fd);
-              lwip_close(fd);
-              FD_CLR(fd, &conn);
-              if (fd == s)
-                 break;
-           }
-        }
+         handle_data(newfd);
+
+         lwip_close(newfd);
+
+
+//        for (fd = 0; fd <= maxfd; ++fd) {
+//            volatile int is_set = FD_ISSET(fd, &read);
+//           if (is_set) {
+//              if (fd == s) {
+//                 int newfd;
+//                 socklen_t nsize = sizeof(address);
+//
+//                 newfd = lwip_accept(s, (struct sockaddr*) &address, &nsize);
+//
+//                 //UARTprintf("connection accepted - fd %d\n", newfd);
+//                 if (newfd < 0) {
+//                     UARTprintf("Accept error. \n");
+//                 } else {
+//                     UARTprintf("setting TCP_NODELAY to 1\n");
+//                    int flag = 1;
+//                    int optResult = lwip_setsockopt(newfd,
+//                                               IPPROTO_TCP,
+//                                               TCP_NODELAY,
+//                                               (char *)&flag,
+//                                               sizeof(int));
+//                    if (optResult < 0)
+//                        UARTprintf("TCP_NODELAY error \n");
+//                    if (newfd > maxfd) {
+//                       maxfd = newfd;
+//                    }
+//                    FD_SET(newfd, &conn);
+//                 }
+//              }
+//              else if ( 1 /*handle_data(fd,ptr)*/) { //TODO: write data handling function
+//
+//                 //UARTprintf("connection closed - fd %d\n \n",fd);
+//                 lwip_close(fd);
+//                 FD_CLR(fd, &conn);
+//              }
+//           }
+//           else if (FD_ISSET(fd, &except)) {
+//              //UARTprintf("connection aborted - fd %d\n", fd);
+//              lwip_close(fd);
+//              FD_CLR(fd, &conn);
+//              if (fd == s)
+//                 break;
+//           }
+//        }
 
         //vTaskDelayUntil(&xLastWakeTime, XVC_TASK_PERIOD_MS /
         //                        portTICK_RATE_MS);
