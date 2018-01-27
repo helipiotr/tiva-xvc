@@ -161,8 +161,17 @@
 							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.147510425" name="Resource Custom Build Step Output Type"/>
 						</tool>
 					</fileInfo>
+					<folderInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.202746605.1929706310" name="/" resourcePath="third_party/lwip-1.4.1/ports">
+						<toolChain id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.exe.DebugToolchain.1986167987" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.exe.DebugToolchain" unusedChildren="">
+							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.1084234874.2129682332" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.1084234874"/>
+							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.387777251.2108735420" name="Compiler version" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.387777251"/>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.exe.compilerDebug.634506681" name="ARM Compiler" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.exe.compilerDebug.1580529212"/>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.exe.linkerDebug.821311492" name="ARM Linker" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.exe.linkerDebug.1864814685"/>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_5.2.hex.1175035897" name="ARM Hex Utility" superClass="com.ti.ccstudio.buildDefinitions.TMS470_5.2.hex.778764562"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
-						<entry excluding="ssi/ti_master.c|ssi/spi_master.c|ssi/soft_spi_master.c|XilinxVirtualCable/src/xvcServer.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="third_party/lwip-1.4.1/ports|ssi/ti_master.c|ssi/spi_master.c|ssi/soft_spi_master.c|XilinxVirtualCable/src/xvcServer.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

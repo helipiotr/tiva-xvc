@@ -90,13 +90,13 @@ int handle_data(int fd /*, volatile jtag_t* ptr*/) {
             return 1;
         }
 
-        int len;
+        uint32_t len;
         if (sread(fd, &len, 4) != 1) {
             UARTprintf("Reading length failed\n");
             return 1;
         }
 
-        int nr_bytes = (len + 7) / 8;
+        uint32_t nr_bytes = (len + 7) / 8;
         if (nr_bytes * 2 > sizeof(buffer)) {
             UARTprintf("Buffer size exceeded\n");
             return 1;
@@ -115,7 +115,7 @@ int handle_data(int fd /*, volatile jtag_t* ptr*/) {
             int bytesLeft = nr_bytes;
             int bitsLeft = len;
             int byteIndex = 0;
-            int tdi, tms, tdo;
+            uint32_t tdi, tms, tdo;
 
             while (bytesLeft > 0) {
                 tms = 0;
@@ -232,11 +232,11 @@ void XVCTask(void)
                 UARTprintf("TCP_NODELAY error \n");
          }
 
-         handle_data(newfd);
+         while(!handle_data(newfd));
 
          lwip_close(newfd);
 
-
+         UARTprintf("Connection closed");
 //        for (fd = 0; fd <= maxfd; ++fd) {
 //            volatile int is_set = FD_ISSET(fd, &read);
 //           if (is_set) {

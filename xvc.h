@@ -21,7 +21,7 @@
 
 static int sread(int fd, void *target, int len);
 
-int handle_data(int fd /*, volatile jtag_t* ptr*/);
+int handle_data(int fd);
 
 void XVCTask(void);
 
