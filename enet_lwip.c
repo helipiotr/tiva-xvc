@@ -322,8 +322,8 @@ main(void)
     #if !(LWIP_DHCP || LWIP_AUTOIP)
         struct ip_addr temp_ip;
         struct ip_addr temp_mask;
-        IP4_ADDR(&temp_ip,45,0,168,192);
-        //IP4_ADDR(&temp_ip,160,95,168,192);
+        //IP4_ADDR(&temp_ip,45,0,168,192);
+        IP4_ADDR(&temp_ip,158,95,168,192);
         IP4_ADDR(&temp_mask,0,255,255,255);
 
         //faster for debugging

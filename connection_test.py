@@ -3,7 +3,7 @@
 import socket
 
 
-TCP_IP = '192.168.0.45'
+TCP_IP = '192.168.95.158'
 TCP_PORT = 2542
 BUFFER_SIZE = 1024
 info = "getinfo:"
@@ -30,9 +30,9 @@ message+=tdi
 
 print("Sending TDI/TMS")
 
-s.send(message)
+#s.send(message)
 
-data = s.recv(BUFFER_SIZE)
+#data = s.recv(BUFFER_SIZE)
 
 print("\t received data:", data)
 
